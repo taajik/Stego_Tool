@@ -1,0 +1,40 @@
+# Project
+todo.txt
+*.png
+*.pdf
+
+# Env
+.env/
+.venv/
+env/
+venv/
+
+# Python
+*.py[co]
+*~
+__pycache__
+
+# Django
+*.log
+project/settings/private.py
+
+# Database
+db.sqlite3
+db.sqlite3-journal
+
+# Visual Studio
+.vscode/
+.history/
+*.code-workspace
+
+# macOS
+._*
+.DS_Store
+.fseventsd
+.Spotlight-V100
+
+# Windows
+Thumbs.db*
+ehthumbs*.db
+[Dd]esktop.ini
+$RECYCLE.BIN/
