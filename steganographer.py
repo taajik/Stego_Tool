@@ -27,36 +27,67 @@ def gen_key(pw):
     return base64.urlsafe_b64encode(kdf.derive(pw)).decode()
 
 
+def pixels_range(width, height, payload_len):
+    """Generate the list of chosen pixels in the carrier
+    to be replaced by (or from which extract) the payload data.
+    """
+
+    # Intervals of chosen pixels (to load the payload in multiple rounds):
+    rounds = 2
+    # Reserve some pixels for steganography metadata.
+    metadata_size = 4
+
+    # Calculate density of payload within carrier's pixels.
+    # Note: values are in number of pixels.
+    carrier_capacity = width*height - metadata_size
+    data_size = math.ceil(payload_len * 8 / 6)
+    # Intervals of carrier pixels (to spread out the payload):
+    steps = math.floor(carrier_capacity / data_size) * rounds
+
+    for r in range(rounds):
+        # Stating value of "column" determines which round
+        # of chosen pixels to fill:
+        column = metadata_size + r*steps
+        row = 0
+        while row < height:  # Till the end of carrier file
+            # Generate the position of the next chosen pixel:
+            yield row, column
+            column += steps
+            # If "column" is out of bound, go to the next row
+            # and continue from remainder of the interval.
+            if column >= width:
+                row += 1
+                column = column - width
+
+
 def stego_encrypt(carrier_file, payload_file, pw=None):
-    """"""
+    """Hide every byte of a file (payload) inside another (carrier)."""
 
     img = Image.open(carrier_file)
     width, height = img.size
     pix = img.load()
 
+    # Read binary data of the payload file.
     with open(payload_file, "rb") as bf:
         payload = bf.read()
 
+    # Optionally, the payload can be encrypted before steganography.
     if pw is not None:
         key = gen_key(pw)
         cipher = Fernet(key)
         payload = cipher.encrypt(payload)
 
-    # Calculate density of payload within carrier's pixels.
-    carrier_capacity = width*height - 4
-    data_size = math.ceil(len(payload) * 8 / 6)
-    pixel_steps = math.floor(carrier_capacity / data_size)
-    print(carrier_capacity, data_size, pixel_steps)
+    pixels = pixels_range(width, height, len(payload))
+    return list(pixels), len(payload)
 
 
-stego_encrypt(carrier_file, file)
-
+pixels, pl = stego_encrypt(carrier_file, file)
 
 
 
 
 def stego_decrypt(stego_file, pw=None):
-    """"""
+    """Extract the data hidden inside a file."""
 
     with open(stego_file, "rb") as bf:
         data = bf.read()
