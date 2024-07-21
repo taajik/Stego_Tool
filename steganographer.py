@@ -9,7 +9,7 @@ from cryptography.fernet import Fernet
 from PIL import Image
 
 
-password = input("pw: ").encode()
+# password = input("pw: ").encode()
 file = "../Camel_Fingertips2.mp3"
 carrier_file = "LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
 
@@ -28,11 +28,11 @@ def gen_key(pw):
 
 
 def pixels_range(width, height, payload_len):
-    """Generate the list of chosen pixels in the carrier
-    to be replaced by (or from which extract) the payload data.
+    """Generate the coordinates of chosen (payload-carrying) pixels in
+    the carrier to be replaced by (or from which extract) the payload data.
     """
 
-    # Intervals of chosen pixels (to load the payload in multiple rounds):
+    # Intervals of chosen pixels (to load the payload in multiple rounds).
     rounds = 2
     # Reserve some pixels for steganography metadata.
     metadata_size = 4
@@ -41,23 +41,27 @@ def pixels_range(width, height, payload_len):
     # Note: values are in number of pixels.
     carrier_capacity = width*height - metadata_size
     data_size = math.ceil(payload_len * 8 / 6)
-    # Intervals of carrier pixels (to spread out the payload):
-    steps = math.floor(carrier_capacity / data_size) * rounds
+    # Intervals of carrier pixels (to spread out the payload).
+    # Reserve one pixel for the first data; and 'steps' equals to the number
+    # of pixels that the rest of the data each occupy (including intervals).
+    steps = math.floor((carrier_capacity-1) / (data_size-1))
+    round_steps = steps * rounds
 
     for r in range(rounds):
-        # Stating value of "column" determines which round
-        # of chosen pixels to fill:
+        # Stating value of 'column' determines which round
+        # of chosen pixels are getting filled.
         column = metadata_size + r*steps
         row = 0
         while row < height:  # Till the end of carrier file
-            # Generate the position of the next chosen pixel:
-            yield row, column
-            column += steps
-            # If "column" is out of bound, go to the next row
+            # If 'column' is out of bound, go to the next row
             # and continue from remainder of the interval.
-            if column >= width:
-                row += 1
-                column = column - width
+            row += column // width
+            column = column % width
+            # Generate the position of the next chosen pixel.
+            if row < height and column < width:
+                yield row, column
+            # Jump a whole step.
+            column += round_steps
 
 
 def stego_encrypt(carrier_file, payload_file, pw=None):
@@ -81,7 +85,9 @@ def stego_encrypt(carrier_file, payload_file, pw=None):
     return list(pixels), len(payload)
 
 
-pixels, pl = stego_encrypt(carrier_file, file)
+# pixels, pl = stego_encrypt(carrier_file, file)
+# pixels = pixels_range(4096, 2048, 455469)
+pixels = pixels_range(14, 10, 21)
 
 
 
