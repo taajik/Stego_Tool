@@ -40,10 +40,14 @@ def pixels_range(width, height, payload_len):
     # Calculate density of payload within carrier's pixels.
     # Note: values are in number of pixels.
     carrier_capacity = width*height - metadata_size
+    # Number of pixels requiered to store all of the payload data.
+    # Three units of data can be stord in a pixel (one in each subpixel (RGB))
+    # Each unit of data is two bits.
     data_size = math.ceil(payload_len * 8 / 6)
     # Intervals of carrier pixels (to spread out the payload).
-    # Reserve one pixel for the first data; and 'steps' equals to the number
-    # of pixels that the rest of the data each occupy (including intervals).
+    # Reserve one pixel for the first unit of data; and for the rest:
+    # 'steps' equals to the number of pixels that each
+    # unit of data occupies (one payload-carrying plus intervals).
     steps = math.floor((carrier_capacity-1) / (data_size-1))
     round_steps = steps * rounds
 
@@ -59,7 +63,10 @@ def pixels_range(width, height, payload_len):
             column = column % width
             # Generate the position of the next chosen pixel.
             if row < height and column < width:
-                yield row, column
+                # c corresponds to the RGB subpixels.
+                # So the same pixel coordinate is returned three times.
+                for c in range(3):
+                    yield row, column, c
             # Jump a whole step.
             column += round_steps
 
@@ -81,13 +88,27 @@ def stego_encrypt(carrier_file, payload_file, pw=None):
         cipher = Fernet(key)
         payload = cipher.encrypt(payload)
 
-    pixels = pixels_range(width, height, len(payload))
-    return list(pixels), len(payload)
+    positions = iter(pixels_range(width, height, len(payload)))
+
+    changes = []
+    for data_byte in payload:
+        for quarter in range(0, 8, 2):
+            i, j, c = next(positions)
+            # Remove the two least significant bits of the subpixel
+            # and replace them with the next two bits of data.
+            new_px = list(pix[j, i])
+            data_unit = (data_byte>>quarter & 3)
+            new_px[c] = (pix[j, i][c] & 252) | data_unit
+            changes.append((i, j, c, data_unit, pix[j, i], new_px))
+            pix[j, i] = tuple(new_px)
+
+    img.save(carrier_file)
+    return changes
 
 
-# pixels, pl = stego_encrypt(carrier_file, file)
+c = stego_encrypt(carrier_file, file)
 # pixels = pixels_range(4096, 2048, 455469)
-pixels = pixels_range(14, 10, 21)
+# pixels = pixels_range(14, 10, 21)
 
 
 
