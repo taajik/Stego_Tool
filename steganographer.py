@@ -32,9 +32,24 @@ def gen_key(pw):
     return base64.urlsafe_b64encode(kdf.derive(pw)).decode()
 
 
-def pixels_range(width, height, payload_len):
-    """Generate the coordinates of chosen (payload-carrying) pixels in
-    the carrier to be replaced by (or from which extract) the payload data.
+def metadata_pixels(width):
+    """Generate the coordinates of metadata pixels in the carrier
+    that contain the size of the payload in bytes.
+    """
+
+    for j in range(METADATA_SIZE):
+        i = j // width
+        for c in range(3):
+            if j == METADATA_SIZE-1 and c == j%4:
+                # Remainder of the metadata in the last pixel doesn't
+                # necessarily take all three subpixels.
+                break
+            yield i, j%width, c
+
+
+def payload_pixels(width, height, payload_len):
+    """Generate the coordinates of payload-carrying pixels in the carrier
+    to be replaced by (or from which extract) the payload data.
     """
 
     # Calculate density of payload within carrier's pixels.
@@ -47,28 +62,18 @@ def pixels_range(width, height, payload_len):
     if data_size > carrier_capacity:
         raise OverflowError("payload can't fit in this carrier file")
 
-    # Generate positions of the metadata.
-    for j in range(METADATA_SIZE):
-        i = j // width
-        for c in range(3):
-            if j == METADATA_SIZE-1 and c == j%4:
-                # Remainder of the metadata in the last pixel doesn't
-                # necessarily take all three subpixels.
-                break
-            yield i, j%width, c
-
     # Intervals of carrier pixels (to spread out the payload):
     # Reserve one pixel for the first unit of data; and for the rest:
     # 'steps' equals to the number of pixels that each
     # unit of data occupies (one payload-carrying plus intervals).
     steps = math.floor((carrier_capacity-1) / (data_size-1))
-    # Intervals of chosen pixels (to load the payload in multiple rounds):
+    # Intervals of data pixels (to load the payload in multiple rounds):
     ROUNDS = 2
     round_steps = steps * ROUNDS
 
     for r in range(ROUNDS):
         # Stating value of 'column' determines which round
-        # of chosen pixels are getting filled.
+        # of data pixels are getting filled.
         column = METADATA_SIZE + r*steps
         row = 0
         while row < height:  # Till the end of carrier file
@@ -76,7 +81,7 @@ def pixels_range(width, height, payload_len):
             # and continue from remainder of the interval.
             row += column // width
             column = column % width
-            # Generate positions of the chosen pixels.
+            # Generate coordinates of the data pixels.
             if row < height and column < width:
                 # c corresponds to the RGB subpixels.
                 # So the same pixel coordinate is returned three times.
@@ -84,6 +89,12 @@ def pixels_range(width, height, payload_len):
                     yield row, column, c
             # Jump a whole step.
             column += round_steps
+
+
+def pixel_coordinates(width, height, payload_len):
+    """Generate coordinates of all the pixels in carrier that contain data."""
+    yield from metadata_pixels(width)
+    yield from payload_pixels(width, height, payload_len)
 
 
 def stego_encrypt(carrier_file, payload_file, pw=None):
@@ -109,19 +120,19 @@ def stego_encrypt(carrier_file, payload_file, pw=None):
         raise ValueError("payload is too large")
     payload = int.to_bytes(payload_len, METADATA_BYTES, "big") + payload
 
-    # Designated positions for the rest of data in carrier's pixels:
-    positions = iter(pixels_range(width, height, payload_len))
+    # Designated coordinates for the data in carrier's pixels:
+    coordinates = pixel_coordinates(width, height, payload_len)
 
     # Load the data into the carrier.
     # Every byte of data is split into four sections of two bits and
     # each one of these units are stored in two LSBs of a subpixel.
     for data_byte in payload:
-        for quarter in range(0, 8, 2):
-            i, j, c = next(positions)
-            # Remove the two least significant bits of the subpixel
-            # and replace them with the next unit of data.
+        for quarter in range(6, -1, -2):
+            i, j, c = next(coordinates)
             new_px = list(pix[j, i])
-            # NEEDS A COMMENT:
+            # Force two least significant bits of the subpixel to zero
+            # by using 252 (11111100) as mask; and replace them with
+            # a unit of data picked out using the 'quarter':
             new_px[c] = (pix[j, i][c] & 252) | (data_byte>>quarter & 3)
             pix[j, i] = tuple(new_px)
 
@@ -129,9 +140,9 @@ def stego_encrypt(carrier_file, payload_file, pw=None):
 
 
 stego_encrypt(carrier_file, file)
-# pixels = pixels_range(4096, 2048, 455469)
-# pixels = pixels_range(14, 10, 21)
-# pixels = pixels_range(14, 10, 90)
+# pixels = pixel_coordinates(4096, 2048, 455469)
+# pixels = pixel_coordinates(14, 10, 21)
+# pixels = pixel_coordinates(14, 10, 90)
 
 # max_payload_bytes = math.floor((width*height - METADATA_SIZE) * 0.75)
 
