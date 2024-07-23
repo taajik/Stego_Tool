@@ -93,17 +93,21 @@ def pixel_coordinates(width, height, payload_len):
     yield from payload_pixels(width, height, payload_len)
 
 
-def stego_encrypt(carrier_file, payload_file, pw=None):
-    """Hide every byte of a file (payload) inside another (carrier)."""
+def stego_encrypt(carrier_file, payload_input, pw=None, is_text=True):
+    """Hide every byte of the payload inside a file (carrier)."""
 
     # Access pixels of the carrier file.
     img = Image.open(carrier_file)
     width, height = img.size
     pix = img.load()
 
-    # Read binary data of the payload file.
-    with open(payload_file, "rb") as bf:
-        payload = bf.read()
+    # The payload is either a binary file or plain text.
+    if is_text:
+        payload = payload_input.encode()
+    else:
+        # Read binary data of the payload file.
+        with open(payload_input, "rb") as bf:
+            payload = bf.read()
 
     # Optionally, the payload can be encrypted before steganography.
     if pw is not None:
@@ -137,8 +141,8 @@ def stego_encrypt(carrier_file, payload_file, pw=None):
     img.save(carrier_file)
 
 
-def stego_decrypt(stego_file, pw=None):
-    """Extract the data hidden inside a file."""
+def stego_decrypt(stego_file, pw=None, is_text=True):
+    """Extract the data embedded inside a file."""
 
     # Access pixels of the stego file.
     img = Image.open(stego_file)
@@ -178,14 +182,20 @@ def stego_decrypt(stego_file, pw=None):
         cipher = Fernet(key)
         payload = cipher.decrypt(payload)
 
-    # Save the extracted payload to a file.
-    with open("media/embedded_payload", "wb") as bf:
-        bf.write(payload)
+    # Produce the payload as output.
+    if is_text:
+        print(payload.decode())
+    else:
+        # Save the extracted payload to a file.
+        with open("media/embedded_payload", "wb") as bf:
+            bf.write(payload)
 
 
 
 
+password = None
 password = input("pw: ").encode()
+message = input("message: ")
 file = "media/IMG_20221010_163822_630.jpg"
 carrier_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
 stego_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
@@ -194,12 +204,14 @@ stego_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
 from timeit import default_timer as timer
 s = timer()
 
-# stego_encrypt(carrier_file, file, password)
+# stego_encrypt(carrier_file, file, password, False)
+stego_encrypt(carrier_file, message, password)
 # pixels = pixel_coordinates(4096, 2048, 455469)
 # pixels = pixel_coordinates(14, 10, 21)
 # pixels = pixel_coordinates(14, 10, 90)
 # pixels = pixel_coordinates(5760, 3840, 6180806)
-stego_decrypt(stego_file, password)
+# stego_decrypt(stego_file, password, False)
+# stego_decrypt(stego_file, password)
 
 e = timer()
 print(e-s)
