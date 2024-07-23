@@ -3,6 +3,7 @@ todo.txt
 *.png
 *.pdf
 
+
 # Env
 .env/
 .venv/
@@ -16,6 +17,7 @@ __pycache__
 
 # Django
 *.log
+media/
 project/settings/private.py
 
 # Database

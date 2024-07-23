@@ -9,10 +9,6 @@ from cryptography.fernet import Fernet
 from PIL import Image
 
 
-# password = input("pw: ").encode()
-file = "../Frank Sinatra_The World We Knew (Over And Over).mp3"
-carrier_file = "LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
-
 # Reserve some pixels for steganography metadata.
 METADATA_SIZE = 4
 # metadata size in bytes = (METADATA_SIZE pixels * 3 subpixels * 2 LSBs) / 8
@@ -58,7 +54,7 @@ def payload_pixels(width, height, payload_len):
     # Number of pixels requiered to store all of the payload data:
     # Three units of data can be stord in a pixel (one in each subpixel (RGB)).
     # Each unit of data is two bits.
-    data_size = math.ceil(payload_len * 8 / 6)
+    data_size = math.ceil(payload_len*8 / 6)
     if data_size > carrier_capacity:
         raise OverflowError("payload can't fit in this carrier file")
 
@@ -100,6 +96,7 @@ def pixel_coordinates(width, height, payload_len):
 def stego_encrypt(carrier_file, payload_file, pw=None):
     """Hide every byte of a file (payload) inside another (carrier)."""
 
+    # Access pixels of the carrier file.
     img = Image.open(carrier_file)
     width, height = img.size
     pix = img.load()
@@ -136,34 +133,73 @@ def stego_encrypt(carrier_file, payload_file, pw=None):
             new_px[c] = (pix[j, i][c] & 252) | (data_byte>>quarter & 3)
             pix[j, i] = tuple(new_px)
 
+    # Save the stego file embedded with payload.
     img.save(carrier_file)
-
-
-stego_encrypt(carrier_file, file)
-# pixels = pixel_coordinates(4096, 2048, 455469)
-# pixels = pixel_coordinates(14, 10, 21)
-# pixels = pixel_coordinates(14, 10, 90)
-
-# max_payload_bytes = math.floor((width*height - METADATA_SIZE) * 0.75)
-
-
 
 
 def stego_decrypt(stego_file, pw=None):
     """Extract the data hidden inside a file."""
 
+    # Access pixels of the stego file.
     img = Image.open(stego_file)
     width, height = img.size
     pix = img.load()
 
-    # Do steganography here!
-    # payload_len = int.from_bytes(pix[:METADATA_SIZE], "big")
-    # payload = pix[METADATA_SIZE:payload_len]
+    # Extract the length of data from the metadata pixels.
+    payload_len = 0
+    for i, j, c in metadata_pixels(width):
+        # 'payload_len' is constructed two bits at a time
+        # from the least significant bits of each subpixel.
+        payload_len = (payload_len<<2) | (pix[j, i][c]&3)
 
+    # Designated coordinates for the rest of data in carrier's pixels:
+    coordinates = payload_pixels(width, height, payload_len)
+
+    # Extract the data from the carrier.
+    # They are in the two LSBs of subpixels that are listed in 'coordinates'.
+    # A list of integers that each represent a byte of data:
+    payload = []
+    # 'payload_len' determines how many bytes of data there is.
+    for _ in range(payload_len):
+        # Extract every byte of data.
+        data_byte = 0
+        for _ in range(4):
+            # Extract quarters of a byte.
+            i, j, c = next(coordinates)
+            # Add two zeros on the right and replace them with 2 bits of data.
+            data_byte = (data_byte<<2) | (pix[j, i][c]&3)
+        payload.append(data_byte)
+    # Convert the list of integers to binary data.
+    payload = bytes(payload)
+
+    # Decrypt the payload if it was encrypted, before saving it.
     if pw is not None:
         key = gen_key(pw)
         cipher = Fernet(key)
         payload = cipher.decrypt(payload)
 
-    with open("embedded_payload", "wb") as bf:
+    # Save the extracted payload to a file.
+    with open("media/embedded_payload", "wb") as bf:
         bf.write(payload)
+
+
+
+
+password = input("pw: ").encode()
+file = "media/IMG_20221010_163822_630.jpg"
+carrier_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
+stego_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
+
+
+from timeit import default_timer as timer
+s = timer()
+
+# stego_encrypt(carrier_file, file, password)
+# pixels = pixel_coordinates(4096, 2048, 455469)
+# pixels = pixel_coordinates(14, 10, 21)
+# pixels = pixel_coordinates(14, 10, 90)
+# pixels = pixel_coordinates(5760, 3840, 6180806)
+stego_decrypt(stego_file, password)
+
+e = timer()
+print(e-s)
