@@ -15,7 +15,7 @@ METADATA_SIZE = 4
 METADATA_BYTES = METADATA_SIZE * 3 // 4
 
 
-def gen_key(pw):
+def gen_key(pw: str):
     """Generate a symmetric key based on a password."""
 
     kdf = PBKDF2HMAC(
@@ -28,7 +28,7 @@ def gen_key(pw):
     return base64.urlsafe_b64encode(kdf.derive(pw)).decode()
 
 
-def metadata_pixels(width):
+def metadata_pixels(width: int):
     """Generate the coordinates of metadata pixels in the carrier
     that contain the size of the payload in bytes.
     """
@@ -43,7 +43,7 @@ def metadata_pixels(width):
             yield i, j%width, c
 
 
-def payload_pixels(width, height, payload_len):
+def payload_pixels(width: int, height: int, payload_len: int):
     """Generate the coordinates of payload-carrying pixels in the carrier
     to be replaced by (or from which extract) the payload data.
     """
@@ -87,13 +87,14 @@ def payload_pixels(width, height, payload_len):
             column += round_steps
 
 
-def pixel_coordinates(width, height, payload_len):
+def pixel_coordinates(width: int, height: int, payload_len: int):
     """Generate coordinates of all the pixels in carrier that contain data."""
     yield from metadata_pixels(width)
     yield from payload_pixels(width, height, payload_len)
 
 
-def stego_encrypt(carrier_file, payload_input, pw=None, is_text=True):
+def stego_encrypt(carrier_file: str, payload_input: str, pw: str = None,
+                  is_text: bool = True):
     """Hide every byte of the payload inside a file (carrier)."""
 
     # Access pixels of the carrier file.
@@ -141,7 +142,7 @@ def stego_encrypt(carrier_file, payload_input, pw=None, is_text=True):
     img.save(carrier_file)
 
 
-def stego_decrypt(stego_file, pw=None, is_text=True):
+def stego_decrypt(stego_file: str, pw: str = None, is_text: bool = True):
     """Extract the data embedded inside a file."""
 
     # Access pixels of the stego file.
