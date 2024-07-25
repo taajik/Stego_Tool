@@ -194,25 +194,22 @@ def stego_decrypt(stego_file: str, pw: str = None, is_text: bool = True):
 
 
 
-password = None
-password = input("pw: ").encode()
-message = input("message: ")
-file = "media/IMG_20221010_163822_630.jpg"
-carrier_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
-stego_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
+# password = None
+# password = input("pw: ").encode()
+# message = input("message: ")
+# file = "media/IMG_20221010_163822_630.jpg"
+# carrier_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
+# stego_file = "media/LDR_3_VPM_VISTA_STILL_digital_art_FINAL.png"
 
-
-from timeit import default_timer as timer
-s = timer()
-
+# from timeit import default_timer as timer
+# s = timer()
 # stego_encrypt(carrier_file, file, password, False)
-stego_encrypt(carrier_file, message, password)
+# stego_encrypt(carrier_file, message, password)
 # pixels = pixel_coordinates(4096, 2048, 455469)
 # pixels = pixel_coordinates(14, 10, 21)
 # pixels = pixel_coordinates(14, 10, 90)
 # pixels = pixel_coordinates(5760, 3840, 6180806)
 # stego_decrypt(stego_file, password, False)
 # stego_decrypt(stego_file, password)
-
-e = timer()
-print(e-s)
+# e = timer()
+# print(e-s)
