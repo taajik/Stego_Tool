@@ -1,4 +1,6 @@
 
+import json
+
 from django.http import StreamingHttpResponse
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
@@ -44,7 +46,9 @@ def run_stego(is_encrypt, image, payload_input, is_text):
         result = stego_encrypt(image, payload_input, is_text=is_text)
     else:
         result = stego_decrypt(image, is_text=is_text)
-    yield result
+
+    is_text = (not is_encrypt) and is_text
+    yield json.dumps({"result":[result, is_text]})
 
 
 def process_result(request):
@@ -56,6 +60,6 @@ def process_result(request):
             is_text=request.session.get("is_text"),
         ),
         status=200,
-        content_type="text/event-stream"
+        content_type="application/json",
     )
     return response
