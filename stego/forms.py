@@ -5,7 +5,7 @@ from django import forms
 
 
 class EncryptForm(forms.Form):
-    carrier = forms.ImageField(help_text="The Image to embed the data in.")
+    carrier_file = forms.ImageField(help_text="The Image to embed the data in.")
     payload_file = forms.FileField(
         required=False,
         help_text="The file you want to hide."
@@ -16,8 +16,8 @@ class EncryptForm(forms.Form):
         help_text="The text you want to hide."
     )
 
-    def save_files(self):
-        carrier = self.cleaned_data.get("carrier")
+    def prepare_data(self):
+        carrier = self.cleaned_data.get("carrier_file")
         payload_file = self.cleaned_data.get("payload_file")
         is_text = True
         payload_input = self.cleaned_data.get("payload_text")
@@ -35,3 +35,19 @@ class EncryptForm(forms.Form):
                     pf.write(chunk)
 
         return carrier_name, payload_input, is_text
+
+
+class DecryptForm(forms.Form):
+    stego_file = forms.ImageField(help_text="The Image containing the embedded data.")
+    is_text = forms.BooleanField(required=False)
+
+    def prepare_data(self):
+        stego = self.cleaned_data.get("stego_file")
+        is_text = self.cleaned_data.get("is_text")
+
+        stego_name = f"media/{uuid.uuid4()}_{stego.name}"
+        with open(stego_name, "wb+") as cf:
+            for chunk in stego.chunks():
+                cf.write(chunk)
+
+        return stego_name, is_text

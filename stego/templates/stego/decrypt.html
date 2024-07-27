@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block style %}
+<!-- <link rel="stylesheet" href="{% static 'stego/css/decrypt.css' %}"> -->
+{% endblock %}
+
+
+{% block content %}
+
+<h2>Decrypt</h2>
+
+<form enctype="multipart/form-data" method="post" action="{% url 'stego:decrypt' %}">
+    {% csrf_token %}
+
+    {{ form.as_div }}
+
+    <br>
+    <input type="submit" value="Decrypt">
+</form>
+
+{% endblock %}

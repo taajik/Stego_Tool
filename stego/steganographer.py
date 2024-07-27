@@ -1,6 +1,7 @@
 
 import base64
 import math
+import uuid
 
 from cryptography.hazmat.backends import default_backend
 from cryptography.hazmat.primitives import hashes
@@ -140,6 +141,7 @@ def stego_encrypt(carrier_file: str, payload_input: str, pw: str = None,
 
     # Save the stego file embedded with payload.
     img.save(carrier_file)
+    return "/" + carrier_file
 
 
 def stego_decrypt(stego_file: str, pw: str = None, is_text: bool = True):
@@ -185,11 +187,14 @@ def stego_decrypt(stego_file: str, pw: str = None, is_text: bool = True):
 
     # Produce the payload as output.
     if is_text:
-        print(payload.decode())
+        payload_result = payload.decode()
     else:
         # Save the extracted payload to a file.
-        with open("media/embedded_payload", "wb") as bf:
+        payload_result = f"media/embedded_payload_{uuid.uuid4()}"
+        with open(payload_result, "wb") as bf:
             bf.write(payload)
+        payload_result = "/" + payload_result
+    return payload_result
 
 
 
