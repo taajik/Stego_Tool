@@ -136,11 +136,12 @@ def stego_encrypt(carrier_file: str, payload_input: str, pw: str = None,
             # Force two least significant bits of the subpixel to zero
             # by using 252 (11111100) as mask; and replace them with
             # a unit of data picked out using the 'quarter':
-            new_px[c] = (pix[j, i][c] & 252) | (data_byte>>quarter & 3)
+            new_px[c] = (new_px[c] & 252) | (data_byte>>quarter & 3)
             pix[j, i] = tuple(new_px)
 
-    # Save the stego file embedded with payload.
-    img.save(carrier_file)
+    # Save the stego file embedded with payload as PNG.
+    carrier_file = carrier_file.rsplit(".", 1)[0] + ".png"
+    img.save(carrier_file, "PNG")
     return "/" + carrier_file
 
 
