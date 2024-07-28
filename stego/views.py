@@ -16,10 +16,11 @@ class EncryptFormView(FormView):
     success_url = reverse_lazy("stego:result")
 
     def form_valid(self, form):
-        carrier_file, payload_input, is_text = form.prepare_data()
+        carrier_file, payload_input, password, is_text = form.prepare_data()
         self.request.session["is_encrypt"] = True
         self.request.session["image"] = carrier_file
         self.request.session["payload_input"] = payload_input
+        self.request.session["password"] = password
         self.request.session["is_text"] = is_text
         return super().form_valid(form)
 
@@ -30,9 +31,10 @@ class DecryptFormView(FormView):
     success_url = reverse_lazy("stego:result")
 
     def form_valid(self, form):
-        stego_file, is_text = form.prepare_data()
+        stego_file, password, is_text = form.prepare_data()
         self.request.session["is_encrypt"] = False
         self.request.session["image"] = stego_file
+        self.request.session["password"] = password
         self.request.session["is_text"] = is_text
         return super().form_valid(form)
 
@@ -41,11 +43,11 @@ class ResultView(TemplateView):
     template_name = "stego/result.html"
 
 
-def run_stego(is_encrypt, image, payload_input, is_text):
+def run_stego(is_encrypt, image, payload_input, password, is_text):
     if is_encrypt:
-        result = stego_encrypt(image, payload_input, is_text=is_text)
+        result = stego_encrypt(image, payload_input, password, is_text)
     else:
-        result = stego_decrypt(image, is_text=is_text)
+        result = stego_decrypt(image, password, is_text)
 
     is_text = (not is_encrypt) and is_text
     yield json.dumps({"result":[result, is_text]})
@@ -57,6 +59,7 @@ def process_result(request):
             is_encrypt=request.session.get("is_encrypt"),
             image=request.session.get("image"),
             payload_input=request.session.get("payload_input"),
+            password=request.session.get("password"),
             is_text=request.session.get("is_text"),
         ),
         status=200,

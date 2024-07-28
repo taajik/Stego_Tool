@@ -111,9 +111,9 @@ def stego_encrypt(carrier_file: str, payload_input: str, pw: str = None,
         with open(payload_input, "rb") as bf:
             payload = bf.read()
 
-    # Optionally, the payload can be encrypted before steganography.
+    # Optionally, the payload can be enciphered before steganography.
     if pw is not None:
-        key = gen_key(pw)
+        key = gen_key(pw.encode())
         cipher = Fernet(key)
         payload = cipher.encrypt(payload)
 
@@ -180,9 +180,9 @@ def stego_decrypt(stego_file: str, pw: str = None, is_text: bool = True):
     # Convert the list of integers to binary data.
     payload = bytes(payload)
 
-    # Decrypt the payload if it was encrypted, before saving it.
+    # Decipher the payload if it was enciphered, before saving it.
     if pw is not None:
-        key = gen_key(pw)
+        key = gen_key(pw.encode())
         cipher = Fernet(key)
         payload = cipher.decrypt(payload)
 
