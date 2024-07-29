@@ -1,6 +1,7 @@
 
 import json
 
+from django.core.exceptions import PermissionDenied
 from django.http import StreamingHttpResponse
 from django.urls import reverse_lazy
 from django.views.generic.base import TemplateView
@@ -22,6 +23,7 @@ class EncryptFormView(FormView):
         self.request.session["payload_input"] = payload_input
         self.request.session["password"] = password
         self.request.session["is_text"] = is_text
+        self.request.session.set_expiry(300)
         return super().form_valid(form)
 
 
@@ -36,11 +38,17 @@ class DecryptFormView(FormView):
         self.request.session["image"] = stego_file
         self.request.session["password"] = password
         self.request.session["is_text"] = is_text
+        self.request.session.set_expiry(300)
         return super().form_valid(form)
 
 
 class ResultView(TemplateView):
     template_name = "stego/result.html"
+
+    def get(self, request, *args, **kwargs):
+        if "is_encrypt" not in request.session:
+            raise PermissionDenied()
+        return super().get(request, *args, **kwargs)
 
 
 def run_stego(is_encrypt, image, payload_input, password, is_text):
@@ -54,13 +62,16 @@ def run_stego(is_encrypt, image, payload_input, password, is_text):
 
 
 def process_result(request):
+    session = dict(request.session)
+    request.session.flush()
+
     response = StreamingHttpResponse(
         run_stego(
-            is_encrypt=request.session.get("is_encrypt"),
-            image=request.session.get("image"),
-            payload_input=request.session.get("payload_input"),
-            password=request.session.get("password"),
-            is_text=request.session.get("is_text"),
+            is_encrypt=session.get("is_encrypt"),
+            image=session.get("image"),
+            payload_input=session.get("payload_input"),
+            password=session.get("password"),
+            is_text=session.get("is_text"),
         ),
         status=200,
         content_type="application/json",
