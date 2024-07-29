@@ -2,23 +2,35 @@
 import uuid
 
 from django import forms
+from django.core import validators
+from django.core.exceptions import ValidationError
+
+
+def size_limit(value):
+    """A validator that limits the file size to 100MB."""
+
+    if value.size >= 100000000:
+        raise ValidationError("File is too large.")
 
 
 class EncryptForm(forms.Form):
     carrier_file = forms.ImageField(
         label="The cover image",
         help_text="The Image to embed the data in.",
+        validators=[size_limit],
     )
     payload_file = forms.FileField(
         required=False,
         label="File",
         help_text="The file you want to hide.",
+        validators=[size_limit],
     )
     payload_text = forms.CharField(
         required=False,
         label="Text",
         widget=forms.Textarea,
         help_text="The text you want to hide.",
+        validators=[validators.MaxLengthValidator(100000000)],
     )
     password = forms.CharField(
         required=False,
@@ -56,6 +68,7 @@ class DecryptForm(forms.Form):
     stego_file = forms.ImageField(
         label="The image",
         help_text="The Image containing the embedded data.",
+        validators=[size_limit],
     )
     is_text = forms.BooleanField(
         required=False,
