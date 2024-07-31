@@ -16,12 +16,18 @@
 
 <body>
     <header>
-        <div id="header">
-            <h1>Stego Tool</h1>
-        </div>
+        <h1>Stego Tool</h1>
     </header>
     <main>
         <div id="content">
+            <div id="menu">
+                <div class="menu-item">
+                    <a href="{% url 'stego:encrypt' %}">Encrypt</a>
+                </div>
+                <div class="menu-item">
+                    <a href="{% url 'stego:decrypt' %}">Decrypt</a>
+                </div>
+            </div>
             {% block content %}
             {% endblock %}
         </div>

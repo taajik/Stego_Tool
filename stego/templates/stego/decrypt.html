@@ -8,8 +8,6 @@
 
 {% block content %}
 
-<h2>Decrypt</h2>
-
 <form enctype="multipart/form-data" method="post" action="{% url 'stego:decrypt' %}">
     {% csrf_token %}
 
