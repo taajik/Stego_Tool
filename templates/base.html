@@ -21,12 +21,8 @@
     <main>
         <div id="content">
             <div id="menu">
-                <div class="menu-item">
-                    <a href="{% url 'stego:encrypt' %}">Encrypt</a>
-                </div>
-                <div class="menu-item">
-                    <a href="{% url 'stego:decrypt' %}">Decrypt</a>
-                </div>
+                <a href="{% url 'stego:encrypt' %}">Encrypt</a>
+                <a href="{% url 'stego:decrypt' %}">Decrypt</a>
             </div>
             {% block content %}
             {% endblock %}
