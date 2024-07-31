@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block style %}
-<!-- <link rel="stylesheet" href="{% static 'stego/css/result.css' %}"> -->
+<link rel="stylesheet" href="{% static 'stego/css/result.css' %}">
 {% endblock %}
 
 
@@ -10,10 +10,16 @@
 
 <h2>Result</h2>
 
-{{ stego_file }}
 <p id="message">Processing...</p>
-<a id="downloadlink" href="/" download></a>
-<p id="text-payload"></p>
+
+<a id="download-link" href="/" download>Download</a>
+
+<div id="text-box">
+    <div id="text-wrap">
+        <div id="copy-button">Copy</div>
+        <textarea id="text-payload"></textarea>
+    </div>
+</div>
 
 {% endblock %}
 
@@ -22,5 +28,5 @@
 <script>
     var process_path = '{% url "stego:process" %}';
 </script>
-<script src="{% static 'stego/js/get-result-downloadlink.js' %}"></script>
+<script src="{% static 'stego/js/get-result.js' %}"></script>
 {% endblock %}
