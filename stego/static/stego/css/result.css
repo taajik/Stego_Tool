@@ -21,14 +21,9 @@ h2 {
 }
 
 textarea {
-    width: 75vw;
+    width: 80vw;
     height: 40vh;
-    min-width: 20vw;
     max-width: 80vw;
-    min-height: 20vh;
-    max-height: 80vh;
-    padding: 0.8em 1em;
-    font-size: 1em;
 }
 
 #copy-button {
@@ -43,7 +38,7 @@ textarea {
 
 @media screen and (min-width: 1000px) {
     textarea {
-        width: 30vw;
-        max-width: 35vw;
+        width: 24vw;
+        max-width: 24vw;
     }
 }

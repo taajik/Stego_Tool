@@ -21,6 +21,10 @@ header {
     box-shadow: 0 2px 1px 0 rgba(140,140,140,0.2);
 }
 
+h1 {
+    margin: 10px 0;
+}
+
 main {
     position: relative;
     overflow: auto;
@@ -28,7 +32,7 @@ main {
 }
 
 #content {
-    padding: 10px;
+    padding: 10px 10%;
     background-color: #F1F3F5;
 }
 
@@ -49,27 +53,6 @@ main {
     border-radius: 4px;
     text-decoration: none;
     color: inherit;
-    /* background-color: ; */
-}
-
-h1 {
-    margin: 10px 0;
-}
-
-input, textarea {
-    padding: 2px 5px;
-    border-radius: 10px;
-    /* border-color: ; */
-    background-color: #F1F3F5;
-}
-
-button, input[type=button], input[type=submit], input[type=reset] {
-    /* padding: ; */
-    border-radius: 5px;
-    /* border-color: ; */
-    cursor: pointer;
-    /* color: ; */
-    /* background-color: ; */
 }
 
 img {
@@ -83,11 +66,8 @@ img {
         font-size: large;
     }
     main {
-        margin: 0 28%;
+        margin: 0 35vw;
         padding: 0 2px;
         background-image: linear-gradient(#F1F3F5, 10%, black, 90%, #F1F3F5);
-    }
-    #content {
-        padding: 10px 80px;
     }
 }
