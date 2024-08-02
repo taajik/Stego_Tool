@@ -1,4 +1,8 @@
 
+#content {
+    text-align: center;
+}
+
 h2 {
     margin-top: 0;
     margin-bottom: 15px;
@@ -31,7 +35,7 @@ textarea {
     top: 0;
     right: 2em;
     padding: 2px 4px;
-    border: solid 1px black;
+    border: 1px solid black;
     border-radius: 4px;
     cursor: pointer;
 }

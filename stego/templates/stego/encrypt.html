@@ -2,7 +2,7 @@
 {% load static %}
 
 {% block style %}
-<!-- <link rel="stylesheet" href="{% static 'stego/css/encrypt.css' %}"> -->
+<link rel="stylesheet" href="{% static 'stego/css/encrypt.css' %}">
 {% endblock %}
 
 
@@ -11,10 +11,57 @@
 <form enctype="multipart/form-data" method="post" action="{% url 'stego:encrypt' %}">
     {% csrf_token %}
 
-    {{ form.as_div }}
+
+    <div class="field_wrapper" id="carrier_file_field">
+        {{ form.carrier_file.errors }}
+        {{ form.carrier_file.label_tag }}
+        {% if form.carrier_file.help_text %}
+            <div id="{{ form.carrier_file.auto_id }}_helptext" class="helptext">{{ form.carrier_file.help_text|safe }}</div>
+        {% endif %}
+        {{ form.carrier_file }}
+    </div>
+
+
+    <label id="payload_label" for="id_payload_text">Data:</label>
+    <div id="payload_helptext" class="helptext">The data you want to hide.</div>
+    <div id="payload_menu" class="menu">
+        <div id="payload_text_label" class="menu_item" >Text</div>
+        <div id="payload_file_label" class="menu_item" >File</div>
+    </div>
+
+    <div class="field_wrapper" id="payload_text_field">
+        {{ form.payload_text.errors }}
+        <textarea id="id_payload_text" name="payload_text" aria-describedby="payload_helptext" required></textarea>
+    </div>
+
+    <div class="field_wrapper" id="payload_file_field">
+        {{ form.payload_file.errors }}
+        <input type="file" id="id_payload_file" name="payload_file" aria-describedby="payload_helptext">
+    </div>
+
+
+    <div id="encipher">
+        <p>Encipher?</p>
+        <div><i id="arrow_icon" class="arrow arrow_up"></i></div>
+    </div>
+
+    <div class="field_wrapper" id="password_field">
+        {{ form.password.errors }}
+        {{ form.password.label_tag }}
+        {% if form.password.help_text %}
+            <div id="{{ form.password.auto_id }}_helptext" class="helptext">{{ form.password.help_text|safe }}</div>
+        {% endif %}
+        {{ form.password }}
+    </div>
+
 
     <br>
     <input type="submit" value="Encrypt">
 </form>
 
+{% endblock %}
+
+
+{% block javascript %}
+<script src="{% static 'stego/js/encrypt-form.js' %}"></script>
 {% endblock %}
