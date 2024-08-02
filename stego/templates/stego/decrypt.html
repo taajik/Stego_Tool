@@ -8,13 +8,18 @@
 
 {% block content %}
 
-<form enctype="multipart/form-data" method="post" action="{% url 'stego:decrypt' %}">
+<form id="stego_form" enctype="multipart/form-data" method="post" action="{% url 'stego:decrypt' %}">
     {% csrf_token %}
 
     {{ form.as_div }}
 
     <br>
-    <input type="submit" value="Decrypt">
+    <input id="submit_button" type="submit" value="Decrypt">
 </form>
 
+{% endblock %}
+
+
+{% block javascript %}
+<script src="{% static 'stego/js/display-uploading.js' %}"></script>
 {% endblock %}

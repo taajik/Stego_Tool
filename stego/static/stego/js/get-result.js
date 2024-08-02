@@ -6,8 +6,9 @@ var download_link = document.getElementById('download-link');
 
 var copy_button = document.getElementById('copy-button');
 copy_button.addEventListener('click', function() {
-    navigator.clipboard.writeText(text_payload.value);
-    copy_button.innerText = "Copied!"
+    text_payload.select();
+    document.execCommand('copy');
+    copy_button.innerText = "Copied!";
 });
 
 
@@ -18,7 +19,7 @@ function processFinished (e) {
     if (xhr.readyState === XMLHttpRequest.DONE) {
         if (xhr.status === 200) {
 
-            let result = e.target.response['result']
+            let result = e.target.response['result'];
             message.innerText = 'Your result is ready!';
             if (result[1]) {
                 text_payload.innerText = result[0];
