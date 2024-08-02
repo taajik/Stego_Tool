@@ -22,21 +22,19 @@ class EncryptForm(forms.Form):
     payload_file = forms.FileField(
         required=False,
         label="File",
-        help_text="The file you want to hide.",
         validators=[size_limit],
     )
     payload_text = forms.CharField(
         required=False,
         label="Text",
         widget=forms.Textarea,
-        help_text="The text you want to hide.",
         validators=[validators.MaxLengthValidator(100000000)],
     )
     password = forms.CharField(
         required=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "new-password"}),
         strip=False,
-        help_text="Use password to encipher your data before steganography.",
+        help_text="(Optional) Set a password to encipher your data with, before steganography.",
     )
 
     def prepare_data(self):
@@ -78,7 +76,7 @@ class DecryptForm(forms.Form):
         required=False,
         widget=forms.PasswordInput(attrs={"autocomplete": "current-password"}),
         strip=False,
-        help_text="Use password to decipher the data after steganography.",
+        help_text="The password to use to decipher the data after steganography.",
     )
 
     def prepare_data(self):

@@ -3,6 +3,7 @@
 
 {% block style %}
 <link rel="stylesheet" href="{% static 'stego/css/encrypt.css' %}">
+<link rel="stylesheet" href="{% static 'stego/css/password_field.css' %}">
 {% endblock %}
 
 
@@ -40,20 +41,7 @@
     </div>
 
 
-    <div id="encipher">
-        <p>Encipher?</p>
-        <div><i id="arrow_icon" class="arrow arrow_up"></i></div>
-    </div>
-
-    <div class="field_wrapper" id="password_field">
-        {{ form.password.errors }}
-        {{ form.password.label_tag }}
-        {% if form.password.help_text %}
-            <div id="{{ form.password.auto_id }}_helptext" class="helptext">{{ form.password.help_text|safe }}</div>
-        {% endif %}
-        {{ form.password }}
-    </div>
-
+    {% include 'stego/password_field.html' %}
 
     <br>
     <input id="submit_button" type="submit" value="Encrypt">
@@ -65,4 +53,5 @@
 {% block javascript %}
 <script src="{% static 'stego/js/encrypt-form.js' %}"></script>
 <script src="{% static 'stego/js/display-uploading.js' %}"></script>
+<script src="{% static 'stego/js/password-field.js' %}"></script>
 {% endblock %}

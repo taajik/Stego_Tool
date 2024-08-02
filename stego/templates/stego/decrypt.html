@@ -2,7 +2,8 @@
 {% load static %}
 
 {% block style %}
-<!-- <link rel="stylesheet" href="{% static 'stego/css/decrypt.css' %}"> -->
+<link rel="stylesheet" href="{% static 'stego/css/decrypt.css' %}">
+<link rel="stylesheet" href="{% static 'stego/css/password_field.css' %}">
 {% endblock %}
 
 
@@ -11,7 +12,27 @@
 <form id="stego_form" enctype="multipart/form-data" method="post" action="{% url 'stego:decrypt' %}">
     {% csrf_token %}
 
-    {{ form.as_div }}
+
+    <div class="field_wrapper" id="stego_file_field">
+        {{ form.stego_file.errors }}
+        {{ form.stego_file.label_tag }}
+        {% if form.stego_file.help_text %}
+            <div id="{{ form.stego_file.auto_id }}_helptext" class="helptext">{{ form.stego_file.help_text|safe }}</div>
+        {% endif %}
+        {{ form.stego_file }}
+    </div>
+
+    <div class="field_wrapper" id="is_text_field">
+        {{ form.is_text.errors }}
+        {{ form.is_text.label_tag }}
+        {% if form.is_text.help_text %}
+            <div id="{{ form.is_text.auto_id }}_helptext" class="helptext">{{ form.is_text.help_text|safe }}</div>
+        {% endif %}
+        {{ form.is_text }}
+    </div>
+
+
+    {% include 'stego/password_field.html' %}
 
     <br>
     <input id="submit_button" type="submit" value="Decrypt">
@@ -22,4 +43,5 @@
 
 {% block javascript %}
 <script src="{% static 'stego/js/display-uploading.js' %}"></script>
+<script src="{% static 'stego/js/password-field.js' %}"></script>
 {% endblock %}
