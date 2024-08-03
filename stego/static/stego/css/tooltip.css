@@ -1,0 +1,43 @@
+
+.field_title {
+    display: flex;
+}
+
+.info_icon {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: flex-end;
+    margin: auto 5px;
+    width: 1.2em;
+    height: 1.2em;
+    border-radius: 50%;
+    font-size: small;
+    color: white;
+    background-color: black;
+}
+
+.helptext {
+    visibility: hidden;
+    display: inline;
+    position: absolute;
+    top: 0;
+    left: 150%;
+    z-index: 1;
+    width: 35vw;
+    background-color: black;
+    color: white;
+    text-align: center;
+    padding: 5px 2px;
+    border-radius: 6px;
+}
+
+.info_icon:hover .helptext {
+    visibility: visible;
+}
+
+@media screen and (min-width: 1000px) {
+    .helptext {
+        width: 12vw;
+    }
+}

@@ -4,6 +4,7 @@
 {% block style %}
 <link rel="stylesheet" href="{% static 'stego/css/decrypt.css' %}">
 <link rel="stylesheet" href="{% static 'stego/css/password_field.css' %}">
+<link rel="stylesheet" href="{% static 'stego/css/tooltip.css' %}">
 {% endblock %}
 
 
@@ -12,25 +13,31 @@
 <form id="stego_form" enctype="multipart/form-data" method="post" action="{% url 'stego:decrypt' %}">
     {% csrf_token %}
 
-
     <div class="field_wrapper" id="stego_file_field">
         {{ form.stego_file.errors }}
-        {{ form.stego_file.label_tag }}
-        {% if form.stego_file.help_text %}
-            <div id="{{ form.stego_file.auto_id }}_helptext" class="helptext">{{ form.stego_file.help_text|safe }}</div>
-        {% endif %}
+        <div class="field_title">
+            <label for="id_stego_file">{{ form.stego_file.label }}</label>
+            {% if form.stego_file.help_text %}
+            <div class="info_icon">i
+                <div id="{{ form.stego_file.auto_id }}_helptext" class="helptext">{{ form.stego_file.help_text|safe }}</div>
+            </div>
+            {% endif %}
+        </div>
         {{ form.stego_file }}
     </div>
 
     <div class="field_wrapper" id="is_text_field">
         {{ form.is_text.errors }}
-        <label id="is_text_label" for="id_is_text">Text:</label>
-        {% if form.is_text.help_text %}
-            <div id="{{ form.is_text.auto_id }}_helptext" class="helptext">{{ form.is_text.help_text|safe }}</div>
-        {% endif %}
+        <div id="is_text_title" class="field_title">
+            <label id="is_text_label" for="id_is_text">Text</label>
+            {% if form.is_text.help_text %}
+            <div class="info_icon">i
+                <div id="{{ form.is_text.auto_id }}_helptext" class="helptext">{{ form.is_text.help_text|safe }}</div>
+            </div>
+            {% endif %}
+        </div>
         {{ form.is_text }}
     </div>
-
 
     {% include 'stego/password_field.html' %}
 

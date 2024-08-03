@@ -8,17 +8,10 @@
     width: 100%;
 }
 
-#is_text_label {
-    pointer-events: initial;
-}
-
-#id_is_text_helptext {
+#is_text_title {
     margin-right: auto;
 }
 
-input[type=checkbox] {
-    margin: auto 2%;
-    width: auto;
-    transform: scale(1.5);
-    accent-color: black;
+#is_text_label {
+    pointer-events: initial;
 }
