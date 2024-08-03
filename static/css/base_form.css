@@ -35,7 +35,7 @@ input[type=file] {
 button, input[type=button], input[type=submit], input[type=reset] {
     display: block;
     margin: auto;
-    width: auto;
+    width: initial;
     border-radius: 5px;
     cursor: pointer;
 }

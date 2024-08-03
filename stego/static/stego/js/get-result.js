@@ -8,7 +8,7 @@ var copy_button = document.getElementById('copy-button');
 copy_button.addEventListener('click', function() {
     text_payload.select();
     document.execCommand('copy');
-    copy_button.innerText = "Copied!";
+    copy_button.innerText = 'Copied!';
 });
 
 

@@ -1,0 +1,24 @@
+
+.field_wrapper {
+    margin-bottom: 10px;
+}
+
+#is_text_field {
+    display: flex;
+    width: 100%;
+}
+
+#is_text_label {
+    pointer-events: initial;
+}
+
+#id_is_text_helptext {
+    margin-right: auto;
+}
+
+input[type=checkbox] {
+    margin: auto 2%;
+    width: auto;
+    transform: scale(1.5);
+    accent-color: black;
+}

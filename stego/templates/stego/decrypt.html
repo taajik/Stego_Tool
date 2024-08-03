@@ -24,7 +24,7 @@
 
     <div class="field_wrapper" id="is_text_field">
         {{ form.is_text.errors }}
-        {{ form.is_text.label_tag }}
+        <label id="is_text_label" for="id_is_text">Text:</label>
         {% if form.is_text.help_text %}
             <div id="{{ form.is_text.auto_id }}_helptext" class="helptext">{{ form.is_text.help_text|safe }}</div>
         {% endif %}
