@@ -1,0 +1,16 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Stego Tool - 403{% endblock %}
+
+{% block content %}
+
+<img src="{% static 'img/403.png' %}" alt="403" class="error-code">
+
+<p>Sorry, you can't access this page.</p>
+
+{% if exception %}
+    <p>{{ exception }}</p>
+{% endif %}
+
+{% endblock %}
