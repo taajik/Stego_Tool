@@ -1,10 +1,18 @@
 
+#menu_encrypt {
+    font-weight: bold;
+}
+
 .field_wrapper {
     margin-bottom: 10px;
 }
 
 #payload_menu {
     margin-bottom: 10px;
+}
+
+#payload_text_label {
+    font-weight: bold;
 }
 
 #payload_file_field {
