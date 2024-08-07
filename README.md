@@ -6,7 +6,7 @@ Steganography, embeds data in a medium. In this app, the file used to embed data
 
 > Image steganography is the practice of concealing information within the data of digital images without altering their visual appearance.[1]
 
-This tool, implements the LSB (least significant bit) steganography method. Utilizing the minor effects of these bits on appearances of an image, the payload can be split into units of two bits and replace two least significant bits of a one-bit subpixel (each of the RGB values).
+This tool, implements the LSB (least significant bit) steganography method. Utilizing the minor effects of these bits on appearances of an image, the payload can be split into units of two bits and replace two least significant bits of a one-byte subpixel (each of the RGB values).
 
 The core steganography functions written in Python can be found in [stego/steganographer.py](stego/steganographer.py) and used separately.
 

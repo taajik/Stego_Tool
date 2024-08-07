@@ -38,14 +38,14 @@
         <div id="payload_text_label" class="menu_item" >Text</div>
         <div id="payload_file_label" class="menu_item" >File</div>
     </div>
+    {{ form.payload_text.errors }}
+    {{ form.payload_file.errors }}
 
     <div class="field_wrapper" id="payload_text_field">
-        {{ form.payload_text.errors }}
         <textarea id="id_payload_text" name="payload_text" aria-describedby="payload_helptext" required></textarea>
     </div>
-
     <div class="field_wrapper" id="payload_file_field">
-        {{ form.payload_file.errors }}
+
         <input type="file" id="id_payload_file" name="payload_file" aria-describedby="payload_helptext">
     </div>
 

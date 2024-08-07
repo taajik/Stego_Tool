@@ -57,7 +57,7 @@ def payload_pixels(width: int, height: int, payload_len: int):
     # Each unit of data is two bits.
     data_size = math.ceil(payload_len*8 / 6)
     if data_size > carrier_capacity:
-        raise OverflowError("payload can't fit in this carrier file")
+        raise OverflowError("Payload can't fit in this carrier file!")
 
     # Intervals of carrier pixels (to spread out the payload):
     # Reserve one pixel for the first unit of data; and for the rest:
@@ -65,7 +65,7 @@ def payload_pixels(width: int, height: int, payload_len: int):
     # unit of data occupies (one payload-carrying plus intervals).
     steps = math.floor((carrier_capacity-1) / (data_size-1))
     # Intervals of data pixels (to load the payload in multiple rounds):
-    ROUNDS = 2
+    ROUNDS = 4
     round_steps = steps * ROUNDS
 
     for r in range(ROUNDS):
@@ -120,7 +120,7 @@ def stego_encrypt(carrier_file: str, payload_input: str, pw: str = None,
     payload_len = len(payload)
     # Biggest 'payload_len' that can be stored in 'METADATA_SIZE' pixels:
     if payload_len > 2**(METADATA_BYTES*8) - 1:
-        raise ValueError("payload is too large")
+        raise ValueError("Payload is too large for metadata bytes!")
     payload = int.to_bytes(payload_len, METADATA_BYTES, "big") + payload
 
     # Designated coordinates for the data in carrier's pixels:

@@ -1,6 +1,7 @@
 
 import json
 
+from cryptography.fernet import InvalidToken
 from django.core.exceptions import PermissionDenied
 from django.http import StreamingHttpResponse
 from django.urls import reverse_lazy
@@ -52,13 +53,20 @@ class ResultView(TemplateView):
 
 
 def run_stego(is_encrypt, image, payload_input, password, is_text):
-    if is_encrypt:
-        result = stego_encrypt(image, payload_input, password, is_text)
-    else:
-        result = stego_decrypt(image, password, is_text)
+    error = True
+    try:
+        if is_encrypt:
+            result = stego_encrypt(image, payload_input, password, is_text)
+        else:
+            result = stego_decrypt(image, password, is_text)
+        error = False
+    except InvalidToken:
+        result = "The password is incorrect!"
+    except Exception as e:
+        result = str(e)
 
     is_text = (not is_encrypt) and is_text
-    yield json.dumps({"result":[result, is_text]})
+    yield json.dumps({"result":[error, result, is_text]})
 
 
 def process_result(request):
